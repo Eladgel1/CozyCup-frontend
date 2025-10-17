@@ -40,6 +40,9 @@ const feReactLayer = {
   languageOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
+    parserOptions: {
+      ecmaFeatures: { jsx: true },
+    },
     globals: {
       ...globals.browser,
     },
