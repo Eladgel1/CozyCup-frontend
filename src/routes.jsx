@@ -7,6 +7,10 @@ import Bookings from './pages/Bookings.jsx';
 import Orders from './pages/Orders.jsx';
 import Checkin from './pages/Checkin.jsx';
 import NotFound from './pages/NotFound.jsx';
+import Login from './pages/Login.jsx';
+import Register from './pages/Register.jsx';
+import ProtectedRoute from '@/features/auth/ProtectedRoute.jsx';
+import PublicOnlyRoute from '@/features/auth/PublicOnlyRoute.jsx';
 
 export const router = createBrowserRouter([
   {
@@ -14,10 +18,17 @@ export const router = createBrowserRouter([
     element: <App />,
     children: [
       { index: true, element: <Home /> },
-      { path: 'menu', element: <Menu /> },
-      { path: 'bookings', element: <Bookings /> },
-      { path: 'orders', element: <Orders /> },
-      { path: 'checkin', element: <Checkin /> },
+
+      // Public:
+      { path: 'login', element: <PublicOnlyRoute><Login /></PublicOnlyRoute> },
+      { path: 'register', element: <PublicOnlyRoute><Register /></PublicOnlyRoute> },
+
+      // Protected examples:
+      { path: 'menu', element: <ProtectedRoute />, children: [{ index: true, element: <Menu /> }] },
+      { path: 'bookings', element: <ProtectedRoute />, children: [{ index: true, element: <Bookings /> }] },
+      { path: 'orders', element: <ProtectedRoute />, children: [{ index: true, element: <Orders /> }] },
+      { path: 'checkin', element: <ProtectedRoute />, children: [{ index: true, element: <Checkin /> }] },
+
       { path: '*', element: <NotFound /> },
     ],
   },
