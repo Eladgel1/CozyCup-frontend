@@ -1,3 +1,70 @@
 @import "tailwindcss";
 
-:root { color-scheme: light dark; }
+/* Base layer: normalize app look & feel */
+@layer base {
+  :root { color-scheme: light dark; }
+
+  html, body, #root {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+  }
+
+  /* Links and focus styles */
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--ring);
+    border-radius: 4px;
+  }
+
+  /* Headings scale */
+  h1 { @apply text-3xl font-semibold tracking-tight; }
+  h2 { @apply text-2xl font-semibold tracking-tight; }
+  h3 { @apply text-xl font-semibold; }
+  p  { @apply leading-relaxed; }
+
+  /* Selection */
+  ::selection { background: rgba(14,165,233,.2); }
+}
+
+/* Utilities layer: small semantic helpers */
+@layer utilities {
+  .container { max-width: var(--container); margin-inline: auto; padding-inline: 1rem; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid rgba(148,163,184,.25);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 font-medium text-white;
+    background: var(--brand);
+    border-radius: var(--radius);
+    transition: transform var(--duration) var(--easing), background var(--duration) var(--easing);
+  }
+  .btn:hover { background: var(--brand-2); transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn-outline { background: transparent; color: var(--brand); border: 1px solid var(--brand); }
+  .btn-ghost { background: transparent; color: var(--text); }
+
+  .badge {
+    @apply inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full;
+    background: rgba(2,6,23,.06);
+    color: var(--text-muted);
+  }
+
+  .muted { color: var(--text-muted); }
+  .ring-brand { box-shadow: 0 0 0 2px var(--ring); }
+  .radius-sm { border-radius: var(--radius-sm); }
+  .radius-lg { border-radius: var(--radius-lg); }
+
+  /* Hero background helper */
+  .hero-bg { background-image: var(--hero-img); background-size: cover; background-position: center; }
+}

@@ -1,0 +1,51 @@
+:root {
+  /* Brand & palette */
+  --brand: #0f172a;
+  --brand-2: #334155;
+  --accent: #b45309;
+  --accent-2: #f59e0b;
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --muted: #64748b;
+  --ring: #0ea5e9;
+
+  /* State colors */
+  --success: #16a34a;
+  --danger: #dc2626;
+  --warning: #f59e0b;
+  --info: #0ea5e9;
+
+  /* Typography */
+  --font-sans: ui-sans-serif, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
+  --text: #0f172a;
+  --text-muted: #475569;
+
+  /* Layout */
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  --shadow: 0 1px 2px rgba(2,6,23,.06), 0 1px 3px rgba(2,6,23,.1);
+
+  /* Sizing */
+  --container: 1120px;
+
+  /* Motion */
+  --easing: cubic-bezier(.2,.8,.2,1);
+  --duration: 220ms;
+}
+
+/* Dark theme (opt-in via [data-theme="dark"] on <html>) */
+:root[data-theme="dark"] {
+  --bg: #0b1220;
+  --card: #0f172a;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --brand: #e2e8f0;
+  --brand-2: #94a3b8;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 2px 16px rgba(0,0,0,.25);
+}
+
+/* Utility CSS variables for images */
+:root {
+  --hero-img: url('/src/assets/images/hero.jpg');
+}
