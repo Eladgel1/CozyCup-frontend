@@ -9,8 +9,16 @@ import Checkin from './pages/Checkin.jsx';
 import NotFound from './pages/NotFound.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
+
 import ProtectedRoute from '@/features/auth/ProtectedRoute.jsx';
 import PublicOnlyRoute from '@/features/auth/PublicOnlyRoute.jsx';
+import HostRoute from '@/features/auth/HostRoute.jsx';
+
+// Host placeholders (create empty components if not exist yet)
+const HostDashboard = () => <div className="card p-4">Host Dashboard</div>;
+const HostOrdersBoard = () => <div className="card p-4">Host Orders Board</div>;
+const HostScanner = () => <div className="card p-4">Host Scanner</div>;
+const HostReports = () => <div className="card p-4">Day Summary Report</div>;
 
 export const router = createBrowserRouter([
   {
@@ -19,15 +27,25 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
 
-      // Public:
+      // Public
       { path: 'login', element: <PublicOnlyRoute><Login /></PublicOnlyRoute> },
       { path: 'register', element: <PublicOnlyRoute><Register /></PublicOnlyRoute> },
 
-      // Protected examples:
+      // Protected (customer)
       { path: 'menu', element: <ProtectedRoute />, children: [{ index: true, element: <Menu /> }] },
       { path: 'bookings', element: <ProtectedRoute />, children: [{ index: true, element: <Bookings /> }] },
       { path: 'orders', element: <ProtectedRoute />, children: [{ index: true, element: <Orders /> }] },
       { path: 'checkin', element: <ProtectedRoute />, children: [{ index: true, element: <Checkin /> }] },
+      { path: 'wallet', element: <ProtectedRoute />, children: [{ index: true, element: <div className="card p-4">Wallet</div> }] },
+      { path: 'history', element: <ProtectedRoute />, children: [{ index: true, element: <div className="card p-4">History</div> }] },
+
+      // Host-only
+      { path: 'host', element: <HostRoute />, children: [
+        { path: 'dashboard', element: <HostDashboard /> },
+        { path: 'orders', element: <HostOrdersBoard /> },
+        { path: 'scanner', element: <HostScanner /> },
+        { path: 'reports', element: <HostReports /> },
+      ]},
 
       { path: '*', element: <NotFound /> },
     ],
