@@ -1,7 +1,9 @@
-export function Table({ columns = [], rows = [], keyField = 'id', empty = 'No data' }) {
+import { cx } from '@/lib/cx';
+
+export function Table({ columns = [], rows = [], keyField = 'id', empty = 'No data', className = '' }) {
   if (!rows?.length) return <div className="card p-4">{empty}</div>;
   return (
-    <div className="overflow-x-auto card p-0">
+    <div className={cx('overflow-x-auto card p-0', className)}>
       <table className="min-w-full text-sm">
         <thead className="bg-black/5">
           <tr>
@@ -12,7 +14,7 @@ export function Table({ columns = [], rows = [], keyField = 'id', empty = 'No da
         </thead>
         <tbody>
           {rows.map((r) => (
-            <tr key={r[keyField]} className="border-t">
+            <tr key={r[keyField] ?? crypto.randomUUID()} className="border-t">
               {columns.map((c) => (
                 <td key={c.key} className="px-4 py-2">{c.render ? c.render(r) : r[c.key]}</td>
               ))}
