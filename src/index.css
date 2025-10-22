@@ -74,9 +74,17 @@
     overflow: hidden;
   }
 
-  .qr-hero { background-image: url('/src/assets/icons/qrcode.svg');
-    background-repeat: no-repeat;
-    background-position: right 20px center;
-    background-size: 120px;
+  .qr-hero { position: relative; }
+  .qr-hero::after {
+    content: "";
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 72px;
+    height: 72px;
+    background: url('/src/assets/icons/qrcode.svg') no-repeat center / contain;
+    opacity: .12;
+    pointer-events: none;
   }
 }
