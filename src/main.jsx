@@ -5,11 +5,14 @@ import './styles/tokens.css';
 import './index.css';
 import { router } from './routes.jsx';
 import { AuthProvider } from '@/features/auth/auth.context.jsx';
+import { CartProvider } from '@/features/menu/cart.context.jsx';
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider>
-      <RouterProvider router={router} />
+      <CartProvider>
+        <RouterProvider router={router} />
+      </CartProvider>
     </AuthProvider>
   </React.StrictMode>
 );

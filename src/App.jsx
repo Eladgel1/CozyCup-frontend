@@ -1,10 +1,12 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/auth.context';
+import { useCart } from '@/features/menu/cart.context.jsx';
 import { useState } from 'react';
 import ToastHost from '@/components/ui/Toast';
 
 export default function App() {
   const { user, logout } = useAuth();
+  const { totals } = useCart();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
@@ -33,9 +35,14 @@ export default function App() {
             <NavLink to="/" end className={activeLink}>
               Home
             </NavLink>
+
             <NavLink to="/menu" className={activeLink}>
-              Menu
+              <span className="inline-flex items-center gap-2">
+                <span>Menu</span>
+                {totals.count ? <span className="badge ml-0">{totals.count}</span> : null}
+              </span>
             </NavLink>
+
             <NavLink to="/bookings" className={activeLink}>
               Bookings
             </NavLink>
@@ -107,13 +114,18 @@ export default function App() {
               >
                 Home
               </NavLink>
+
               <NavLink
                 to="/menu"
                 className={activeLink}
                 onClick={() => setOpen(false)}
               >
-                Menu
+                <span className="inline-flex items-center gap-2">
+                  <span>Menu</span>
+                  {totals.count ? <span className="badge ml-0">{totals.count}</span> : null}
+                </span>
               </NavLink>
+
               <NavLink
                 to="/bookings"
                 className={activeLink}
