@@ -2,8 +2,13 @@ import { http } from './http';
 
 export const bookingsApi = {
   create: async ({ slotId }) => {
-    const res = await http.post('/bookings', { slotId });
-    return res.data; // { bookingId, ... }
+    try {
+      const r1 = await http.post('/bookings', { slotId });
+      return r1.data;
+    } catch (e) {
+      const r2 = await http.post('/bookings', { slot: slotId });
+      return r2.data;
+    }
   },
   mine: async () => {
     const res = await http.get('/bookings/me');
