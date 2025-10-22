@@ -73,4 +73,10 @@
     border-radius: var(--radius);
     overflow: hidden;
   }
+
+  .qr-hero { background-image: url('/src/assets/icons/qrcode.svg');
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    background-size: 120px;
+  }
 }
