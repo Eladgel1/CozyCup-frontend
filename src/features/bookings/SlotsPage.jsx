@@ -5,33 +5,48 @@ import { bookingsApi } from '@/lib/bookings.api';
 import SlotDayPicker from './SlotDayPicker';
 import SlotCard from './SlotCard';
 import { useToast } from '@/components/ui/Toast';
+import HostSlotAdmin from './HostSlotAdmin';
+import { useAuth } from '@/features/auth/auth.context';
+
+function todayLocal() {
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
 
 export default function SlotsPage() {
-  const [date, setDate] = useState(new Date().toISOString().slice(0,10));
-  const [state, setState] = useState('loading'); // loading | ready | error
+  const [date, setDate] = useState(todayLocal());
+  const [state, setState] = useState('loading');
   const [slots, setSlots] = useState([]);
   const [bookingIdLoading, setBookingIdLoading] = useState(null);
   const toast = useToast();
+  const { user } = useAuth();
 
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        setState('loading');
-        const data = await slotsApi.list(date);
-        if (mounted) { setSlots(Array.isArray(data) ? data : []); setState('ready'); }
-      } catch {
-        if (mounted) setState('error');
-      }
-    })();
-    return () => { mounted = false; };
-  }, [date]);
+  const load = async () => {
+    try {
+      setState('loading');
+      const data = await slotsApi.list(date);
+      setSlots(Array.isArray(data) ? data : []);
+      setState('ready');
+    } catch {
+      setState('error');
+    }
+  };
+
+  useEffect(() => { load(); }, [date]);
 
   const onBook = async (slot) => {
+    const id = slot.id || slot._id;
     try {
-      setBookingIdLoading(slot.id || slot._id);
-      const res = await bookingsApi.create({ slotId: slot.id || slot._id });
+      setBookingIdLoading(id);
+      await bookingsApi.create({ slotId: id });
       toast.show('Booking created successfully', 'success');
+      // Optimistic UI: decrease available seats locally
+      setSlots((prev) => prev.map(s =>
+        (s.id || s._id) === id
+          ? { ...s, left: Math.max(0, (Number(s.left ?? s.free ?? s.available ?? 0) - 1)) }
+          : s
+      ));
     } catch (e) {
       toast.show(e.message || 'Failed to create booking', 'error');
     } finally {
@@ -41,10 +56,12 @@ export default function SlotsPage() {
 
   return (
     <div>
+      {/* Ribbon */}
       <div className="rounded-[var(--radius)] p-6 bg-[var(--card)] border qr-hero">
         <SlotDayPicker value={date} onChange={setDate} />
       </div>
 
+      {/* States */}
       {state === 'loading' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
           {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-24" />)}
@@ -66,7 +83,12 @@ export default function SlotsPage() {
             ))}
           </div>
         ) : (
-          <div className="card p-6 mt-6">No slots available for this day.</div>
+          <>
+            <div className="card p-6 mt-6">No slots available for this day.</div>
+            {(user?.role === 'host') && (
+              <HostSlotAdmin date={date} onCreated={load} />
+            )}
+          </>
         )
       )}
     </div>
