@@ -1,3 +1,3 @@
-export default function Menu() {
-  return <h2 className="text-lg font-semibold">Menu</h2>;
-}
+import MenuPage from '@/features/menu/MenuPage';
+
+export default function Menu() { return <MenuPage />; }
