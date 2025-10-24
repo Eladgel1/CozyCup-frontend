@@ -8,7 +8,6 @@ export const http = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Attach Authorization header from accessToken
 http.interceptors.request.use((config) => {
   const at = tokenStore.getAccessToken();
   if (at) config.headers.Authorization = `Bearer ${at}`;
@@ -17,17 +16,44 @@ http.interceptors.request.use((config) => {
 
 let isRefreshing = false;
 let pending = [];
+
 function onRefreshed(newAccess) {
   pending.forEach((cb) => cb(newAccess));
   pending = [];
 }
 
+function getFriendlyMessage(status, message) {
+  switch (status) {
+    case 400:
+      return 'Something is wrong with the request. Please try again.';
+    case 401:
+      return 'Your session expired. Please log in again.';
+    case 403:
+      return 'You are not allowed to do this action.';
+    case 404:
+      return 'The requested resource was not found.';
+    case 409:
+      return 'This slot is fully booked. Please choose another one.';
+    case 500:
+      return 'Server error. Please try again later.';
+    default:
+      return message || 'Unexpected error. Please try again.';
+  }
+}
+
 function normalizeError(err) {
-  const status = err?.response?.status ?? null;
-  const serverMessage = err?.response?.data?.message || null;
-  const e = new Error(serverMessage || err.message || 'Request failed');
+  const res = err?.response;
+  const status = res?.status ?? null;
+  const rawMessage =
+    res?.data?.message ||
+    res?.data?.error?.message ||
+    err.message ||
+    'Request failed';
+  const friendly = getFriendlyMessage(status, rawMessage);
+  const e = new Error(friendly);
   e.status = status;
-  e.serverMessage = serverMessage;
+  e.code = status;
+  e.serverMessage = friendly;
   return e;
 }
 
@@ -37,16 +63,11 @@ http.interceptors.response.use(
     const original = err.config || {};
     const status = err?.response?.status;
     const path = (original?.url || '').toString();
-
-    // Never try refresh on auth endpoints themselves
     const isAuthEndpoint = /\/auth\/(login|register|refresh)\b/.test(path);
 
     if (status === 401 && !original._retry && !isAuthEndpoint) {
-      // Only attempt refresh if we actually have a refresh token
       const hasRt = !!tokenStore.getRefreshToken();
-      if (!hasRt) {
-        return Promise.reject(normalizeError(err));
-      }
+      if (!hasRt) return Promise.reject(normalizeError(err));
 
       original._retry = true;
 
@@ -59,12 +80,10 @@ http.interceptors.response.use(
         } catch (_) {
           isRefreshing = false;
           tokenStore.clear();
-          // Refresh failed → reject immediately with normalized error
           return Promise.reject(normalizeError(err));
         }
       }
 
-      // Queue the original request until refresh completes
       return new Promise((resolve, reject) => {
         pending.push((newAccess) => {
           if (!newAccess) return reject(normalizeError(err));
@@ -77,7 +96,6 @@ http.interceptors.response.use(
       });
     }
 
-    // All other errors → reject normalized
     return Promise.reject(normalizeError(err));
   }
 );
