@@ -8,19 +8,21 @@ const pad = (n) => String(n).padStart(2, '0');
 const fmtLocal = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const todayLocal = () => fmtLocal(new Date());
 
+const toISO = (dateStr, timeStr) => {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const [hh, mm] = timeStr.split(':').map(Number);
+  const dt = new Date(y, (m - 1), d, hh, mm, 0, 0);
+  return dt.toISOString();
+};
+
 export default function HostSlotAdmin({ date, onCreated }) {
   const [form, setForm] = useState({
-    date,
-    start: '10:00',
-    end: '11:00',
-    capacity: 8,
+    date, start: '10:00', end: '11:00', capacity: 8,
   });
   const [loading, setLoading] = useState(false);
   const toast = useToast();
 
-  useEffect(() => {
-    setForm((f) => ({ ...f, date }));
-  }, [date]);
+  useEffect(() => { setForm((f) => ({ ...f, date })); }, [date]);
 
   const onChange = (k, v) => setForm((p) => ({ ...p, [k]: v }));
 
@@ -29,27 +31,20 @@ export default function HostSlotAdmin({ date, onCreated }) {
     try {
       setLoading(true);
 
-      const min = todayLocal();
-      if (!form.date || form.date < min) {
+      // validate date/time and capacity
+      if (!form.date || form.date < todayLocal())
         throw new Error('Date cannot be in the past.');
-      }
-
-      if (form.start && form.end && form.start >= form.end) {
+      if (!form.start || !form.end || form.start >= form.end)
         throw new Error('Start time must be earlier than end time.');
-      }
 
       const cap = Number(form.capacity || 0);
-      if (!Number.isFinite(cap) || cap <= 0) {
+      if (!Number.isFinite(cap) || cap <= 0)
         throw new Error('Capacity must be a positive number.');
-      }
 
-      await slotsApi.create({
-        date: form.date,
-        start: form.start,
-        end: form.end,
-        capacity: cap,
-      });
+      const startAt = toISO(form.date, form.start);
+      const endAt   = toISO(form.date, form.end);
 
+      await slotsApi.create({ startAt, endAt, capacity: cap });
       toast.show('Slot created', 'success');
       onCreated?.();
     } catch (err) {
