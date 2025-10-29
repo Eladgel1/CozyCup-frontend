@@ -9,12 +9,12 @@ import Checkin from './pages/Checkin.jsx';
 import NotFound from './pages/NotFound.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
+import Wallet from './pages/Wallet.jsx';
 
 import ProtectedRoute from '@/features/auth/ProtectedRoute.jsx';
 import PublicOnlyRoute from '@/features/auth/PublicOnlyRoute.jsx';
 import HostRoute from '@/features/auth/HostRoute.jsx';
 
-// Host placeholders (create empty components if not exist yet)
 const HostDashboard = () => <div className="card p-4">Host Dashboard</div>;
 const HostOrdersBoard = () => <div className="card p-4">Host Orders Board</div>;
 const HostScanner = () => <div className="card p-4">Host Scanner</div>;
@@ -36,7 +36,7 @@ export const router = createBrowserRouter([
       { path: 'bookings', element: <ProtectedRoute />, children: [{ index: true, element: <Bookings /> }] },
       { path: 'orders', element: <ProtectedRoute />, children: [{ index: true, element: <Orders /> }] },
       { path: 'checkin', element: <ProtectedRoute />, children: [{ index: true, element: <Checkin /> }] },
-      { path: 'wallet', element: <ProtectedRoute />, children: [{ index: true, element: <div className="card p-4">Wallet</div> }] },
+      { path: 'wallet', element: <ProtectedRoute />, children: [{ index: true, element: <Wallet /> }] },
       { path: 'history', element: <ProtectedRoute />, children: [{ index: true, element: <div className="card p-4">History</div> }] },
 
       // Host-only
