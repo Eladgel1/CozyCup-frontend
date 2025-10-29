@@ -1,10 +1,15 @@
 import Drawer from '@/components/ui/Drawer';
 import Button from '@/components/ui/Button';
 import { useCart } from './cart.context';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { pickupApi } from '@/lib/pickup.api';
 import { ordersApi } from '@/lib/orders.api';
 import { useToast } from '@/components/ui/Toast';
+
+const hhmm = (iso) => {
+  try { return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+  catch { return ''; }
+};
 
 export default function CartDrawer() {
   const { items, totals, inc, dec, remove, clear, open, setOpen } = useCart();
@@ -14,38 +19,72 @@ export default function CartDrawer() {
   const [notes, setNotes] = useState('');
   const toast = useToast();
 
+  const subtotal = useMemo(() => totals.sum, [totals.sum]);
+
   useEffect(() => {
-    if (open) {
-      pickupApi.list()
-        .then(setWindows)
-        .catch(() => setWindows([]));
-    }
+    if (!open) return;
+    (async () => {
+      try {
+        const list = await pickupApi.list();
+        // normalize list in case API returns {items: [...]}
+        const arr = Array.isArray(list) ? list : (list?.items || []);
+        setWindows(arr);
+        if (!winId && arr.length) setWinId(arr[0].id || arr[0]._id);
+      } catch {
+        setWindows([]);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const placeOrder = async () => {
     try {
-      if (!items.length) throw new Error('Cart is empty');
-      if (!winId) throw new Error('Please select a pickup window');
+      if (!items.length) throw new Error('Your cart is empty.');
+      if (!winId) throw new Error('Please select a pickup window.');
       setPlacing(true);
-      const payload = {
-        items: items.map(({ id, name, price, qty }) => ({ id, name, price, qty })),
+
+      await ordersApi.create({
+        items,
         pickupWindowId: winId,
-        notes: notes?.trim() || undefined,
-      };
-      const data = await ordersApi.create(payload);
+        notes,
+      });
+
+      // optimistic: decrease remaining (or increase bookedCount)
+      setWindows((prev) => prev.map((w) => {
+        const id = w.id || w._id;
+        if (id !== winId) return w;
+        if (typeof w.remaining === 'number') {
+          return { ...w, remaining: Math.max(0, w.remaining - 1) };
+        }
+        const booked = Number(w.bookedCount ?? 0) + 1;
+        return { ...w, bookedCount: booked };
+      }));
+
       toast.show('Order placed successfully!', 'success');
       clear();
       setOpen(false);
-      console.debug('Order response:', data);
     } catch (e) {
-      toast.show(e.message || 'Failed to place order', 'error');
+      const code = e?.status || e?.code;
+      const msg = code === 409
+        ? 'This pickup window is full. Please choose another window.'
+        : code === 400
+          ? 'Invalid order. Please review your cart and window.'
+          : (e.message || 'Failed to place order');
+      toast.show(msg, 'error');
     } finally {
       setPlacing(false);
     }
   };
 
+  const titleNode = (
+    <div className="flex items-center gap-2">
+      <img src="/src/assets/icons/cart.svg" alt="" className="w-5 h-5" />
+      <span>Your Cart</span>
+    </div>
+  );
+
   return (
-    <Drawer open={open} onClose={() => setOpen(false)} title="Your Cart" width={380}>
+    <Drawer open={open} onClose={() => setOpen(false)} title={titleNode} width={380}>
       {!items.length ? (
         <p className="muted">No items added yet.</p>
       ) : (
@@ -59,7 +98,9 @@ export default function CartDrawer() {
               />
               <div className="flex-1">
                 <div className="font-medium">{x.name}</div>
-                <div className="text-sm muted">${(Number(x.price||0) * x.qty).toFixed(2)}</div>
+                <div className="text-sm muted">
+                  ${(Number(x.price || 0) * x.qty).toFixed(2)}
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <button className="btn-ghost px-2 py-1" onClick={() => dec(x.id)}>-</button>
@@ -75,20 +116,28 @@ export default function CartDrawer() {
       <div className="mt-4 space-y-3">
         <div className="flex items-center justify-between">
           <span className="muted">Subtotal</span>
-          <span className="font-medium">${totals.sum.toFixed(2)}</span>
+          <span className="font-medium">${subtotal.toFixed(2)}</span>
         </div>
 
         <select
           className="w-full border radius-sm px-3 py-2"
           value={winId}
-          onChange={(e)=>setWinId(e.target.value)}
+          onChange={(e) => setWinId(e.target.value)}
         >
           <option value="">Select pickup window</option>
-          {windows.map((w) => (
-            <option key={w.id || w._id} value={w.id || w._id}>
-              {w.label || `${w.start ?? ''} - ${w.end ?? ''}`}
-            </option>
-          ))}
+          {windows.map((w) => {
+            const id = w.id || w._id;
+            const start = hhmm(w.startAt || w.start || w.from);
+            const end = hhmm(w.endAt || w.end || w.to);
+            const left = (typeof w.remaining === 'number')
+              ? Math.max(0, w.remaining)
+              : Math.max(0, Number(w.capacity ?? 0) - Number(w.bookedCount ?? 0));
+            return (
+              <option key={id} value={id}>
+                {start} – {end} ({left} left)
+              </option>
+            );
+          })}
         </select>
 
         <textarea
@@ -96,13 +145,13 @@ export default function CartDrawer() {
           rows={2}
           placeholder="Notes (optional)"
           value={notes}
-          onChange={(e)=>setNotes(e.target.value)}
+          onChange={(e) => setNotes(e.target.value)}
         />
 
         <Button
           className="w-full"
           loading={placing}
-          disabled={!items.length || placing}
+          disabled={!items.length || placing || !winId}
           onClick={placeOrder}
         >
           {placing ? 'Placing…' : `Place order (${totals.count})`}
