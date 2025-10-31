@@ -1,3 +1,3 @@
-export default function Orders() {
-  return <h2 className="text-lg font-semibold">Orders</h2>;
-}
+import OrdersPage from '@/features/orders/OrdersPage';
+export default function Orders() { return <OrdersPage />; }
+
