@@ -11,16 +11,16 @@ import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import Wallet from './pages/Wallet.jsx';
 import History from './pages/History.jsx';
+import Reports from './pages/Reports.jsx';
+
+// NEW: host pages
+import HostDashboardPage from '@/features/host/DashboardPage.jsx';
+import HostOrdersBoard from '@/features/host/OrdersBoard.jsx';
+import HostScannerPage from '@/features/host/ScannerPage.jsx';
 
 import ProtectedRoute from '@/features/auth/ProtectedRoute.jsx';
 import PublicOnlyRoute from '@/features/auth/PublicOnlyRoute.jsx';
 import HostRoute from '@/features/auth/HostRoute.jsx';
-
-// Host placeholders
-const HostDashboard = () => <div className="card p-4">Host Dashboard</div>;
-const HostOrdersBoard = () => <div className="card p-4">Host Orders Board</div>;
-const HostScanner = () => <div className="card p-4">Host Scanner</div>;
-const HostReports = () => <div className="card p-4">Day Summary Report</div>;
 
 export const router = createBrowserRouter([
   {
@@ -46,10 +46,10 @@ export const router = createBrowserRouter([
         path: 'host',
         element: <HostRoute />,
         children: [
-          { path: 'dashboard', element: <HostDashboard /> },
+          { path: 'dashboard', element: <HostDashboardPage /> },
           { path: 'orders', element: <HostOrdersBoard /> },
-          { path: 'scanner', element: <HostScanner /> },
-          { path: 'reports', element: <HostReports /> },
+          { path: 'scanner', element: <HostScannerPage /> },
+          { path: 'reports', element: <Reports /> },
         ],
       },
 
