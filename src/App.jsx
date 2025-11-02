@@ -1,7 +1,7 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/auth.context';
 import { useCart } from '@/features/menu/cart.context.jsx';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import ToastHost from '@/components/ui/Toast';
 
 export default function App() {
@@ -214,7 +214,9 @@ export default function App() {
       </header>
 
       <main className="container py-6">
-        <Outlet />
+        <Suspense fallback={<div className="card p-6">Loading…</div>}>
+          <Outlet />
+        </Suspense>
       </main>
 
       {/* Global toast host */}

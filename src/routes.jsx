@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import Home from './pages/Home.jsx';
@@ -11,12 +11,12 @@ import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import Wallet from './pages/Wallet.jsx';
 import History from './pages/History.jsx';
-import Reports from './pages/Reports.jsx';
 
-// NEW: host pages
-import HostDashboardPage from '@/features/host/DashboardPage.jsx';
-import HostOrdersBoard from '@/features/host/OrdersBoard.jsx';
-import HostScannerPage from '@/features/host/ScannerPage.jsx';
+// Lazy: reports + host pages
+const Reports = lazy(() => import('./pages/Reports.jsx'));
+const HostDashboardPage = lazy(() => import('@/features/host/DashboardPage.jsx'));
+const HostOrdersBoard  = lazy(() => import('@/features/host/OrdersBoard.jsx'));
+const HostScannerPage  = lazy(() => import('@/features/host/ScannerPage.jsx'));
 
 import ProtectedRoute from '@/features/auth/ProtectedRoute.jsx';
 import PublicOnlyRoute from '@/features/auth/PublicOnlyRoute.jsx';
