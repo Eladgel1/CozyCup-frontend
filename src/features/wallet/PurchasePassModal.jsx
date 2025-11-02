@@ -80,7 +80,7 @@ export default function PurchasePassModal({ open, onClose, onPurchased }) {
       <div className="relative flex w-full max-w-3xl max-h-[90vh] flex-col rounded-[var(--radius)] border bg-[var(--card)] shadow-lg">
         <div className="flex items-center justify-between border-b px-4 py-3">
           <h3 className="text-lg font-semibold">Purchase pass</h3>
-          <button className="btn-ghost px-2" onClick={onClose} aria-label="Close">✕</button>
+          <button className="btn-ghost px-2 cursor-pointer" onClick={onClose} aria-label="Close">✕</button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4">
