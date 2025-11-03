@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import Card from '@/components/ui/Card';
-
-const LS_KEY = 'cozy.wallet.local';
+import { tokenStore } from '@/lib/token.store';
 
 function fmtMoney(cents) {
   const v = Number(cents || 0) / 100;
@@ -13,9 +12,40 @@ function fmtDate(iso) {
   return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
+function decodeJwtSub(at) {
+  try {
+    if (!at || typeof at !== 'string') return null;
+    const parts = at.split('.');
+    if (parts.length !== 3) return null;
+    const payload = JSON.parse(
+      atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))
+    );
+    return payload.sub || payload.userId || payload.uid || payload.id || null;
+  } catch {
+    return null;
+  }
+}
+function currentUserId() {
+  const at = tokenStore.getAccessToken?.();
+  const sub = decodeJwtSub(at);
+  if (sub) return String(sub);
+  try {
+    const raw = localStorage.getItem('auth');
+    if (raw) {
+      const obj = JSON.parse(raw);
+      const id = obj?.user?.id || obj?.user?._id;
+      if (id) return String(id);
+    }
+  } catch {}
+  return 'anon';
+}
+function storageKey() {
+  return `cozy.wallet.${currentUserId()}`;
+}
+
 function readLocalBalance() {
   try {
-    const raw = localStorage.getItem(LS_KEY);
+    const raw = localStorage.getItem(storageKey());
     if (!raw) return 0;
     const obj = JSON.parse(raw);
     return Number(obj?.balanceCents ?? 0);
@@ -25,7 +55,7 @@ function readLocalBalance() {
 }
 
 export default function PassCard({ balanceCents = 0, expiresAt, className = '' }) {
-  // Keep a resilient display value:
+  // Keep a resilient display value (per-user)
   const [displayCents, setDisplayCents] = useState(Number(balanceCents || 0));
 
   // Update when prop changes
@@ -33,28 +63,26 @@ export default function PassCard({ balanceCents = 0, expiresAt, className = '' }
     setDisplayCents(Number(balanceCents || 0));
   }, [balanceCents]);
 
-  // Fallback sync from localStorage (helps in cases the prop lags behind)
+  // Fallback sync from user-scoped localStorage (covers server lag / refreshes)
   useEffect(() => {
     const syncFromLocal = () => {
       const local = readLocalBalance();
-      // Update only if different to avoid unnecessary renders
       if (Number.isFinite(local) && local !== displayCents) {
         setDisplayCents(local);
       }
     };
 
-    // Initial pull once mounted
+    // Initial pull
     syncFromLocal();
 
-    // Listen to tab changes & storage updates (storage fires across tabs)
+    // Listen to storage & tab visibility changes
     const onStorage = (e) => {
-      if (e.key === LS_KEY) syncFromLocal();
+      if (e.key === storageKey()) syncFromLocal();
     };
     const onVis = () => document.visibilityState === 'visible' && syncFromLocal();
 
     window.addEventListener('storage', onStorage);
     document.addEventListener('visibilitychange', onVis);
-
     return () => {
       window.removeEventListener('storage', onStorage);
       document.removeEventListener('visibilitychange', onVis);

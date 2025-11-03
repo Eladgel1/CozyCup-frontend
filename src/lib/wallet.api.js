@@ -1,9 +1,45 @@
 import { http } from './http';
+import { tokenStore } from './token.store';
 
-/** ---------- helpers ---------- */
-const KEY = 'cozy.wallet.local';
+/** ---------- user-scoped storage key helpers ---------- */
+function decodeJwtSub(at) {
+  try {
+    if (!at || typeof at !== 'string') return null;
+    const parts = at.split('.');
+    if (parts.length !== 3) return null;
+    const payload = JSON.parse(
+      atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))
+    );
+    return payload.sub || payload.userId || payload.uid || payload.id || null;
+  } catch {
+    return null;
+  }
+}
 
+function currentUserId() {
+  const at = tokenStore.getAccessToken?.();
+  const sub = decodeJwtSub(at);
+  if (sub) return String(sub);
+
+  try {
+    const raw = localStorage.getItem('auth');
+    if (raw) {
+      const obj = JSON.parse(raw);
+      const id = obj?.user?.id || obj?.user?._id;
+      if (id) return String(id);
+    }
+  } catch {}
+
+  return 'anon';
+}
+
+function walletKey() {
+  return `cozy.wallet.${currentUserId()}`;
+}
+
+/** ---------- local storage utilities (scoped per user) ---------- */
 function readLocal() {
+  const KEY = walletKey();
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return { balanceCents: 0, expiresAt: null, history: [] };
@@ -17,7 +53,9 @@ function readLocal() {
     return { balanceCents: 0, expiresAt: null, history: [] };
   }
 }
+
 function writeLocal(next) {
+  const KEY = walletKey();
   const safe = {
     balanceCents: Number(next?.balanceCents ?? 0),
     expiresAt: next?.expiresAt ?? null,
@@ -27,6 +65,7 @@ function writeLocal(next) {
   return safe;
 }
 
+/** ---------- helpers ---------- */
 let lastPackages = [];
 
 function normalizePackage(p) {
@@ -57,6 +96,7 @@ async function tryEndpoints(sequence) {
 /** ---------- public API ---------- */
 export const walletApi = {
   async me() {
+    // Prefer server (per-user by token). Fallback to per-user local.
     try {
       const data = await tryEndpoints([
         { method: 'POST', url: '/purchase/me/wallet' },
@@ -73,7 +113,6 @@ export const walletApi = {
     }
   },
 
-  // Packages to buy
   async packages() {
     const { data } = await http.get('/packages');
     const list = (data?.packages || data?.items || data || []).map(normalizePackage);
@@ -83,12 +122,13 @@ export const walletApi = {
 
   async purchase({ packageId, paymentMethod = 'CASH' }) {
     const pkg =
-      lastPackages.find(p => (p.id || p._id) === packageId) ||
+      lastPackages.find((p) => (p.id || p._id) === packageId) ||
       { priceCents: 0, credits: 0, name: 'Package' };
 
     const price = Number(pkg.priceCents || 0);
     const isCreditTopup = Number(pkg.credits || 0) === 0;
 
+    // Validate balance locally for drink passes (when server fallback is used)
     const localBefore = readLocal();
     if (!isCreditTopup && localBefore.balanceCents < price) {
       const err = new Error('Insufficient balance');
@@ -111,6 +151,7 @@ export const walletApi = {
       amountCents: price,
       note: pkg.name,
       packageId,
+      userId: currentUserId(),
     };
 
     const next = {
