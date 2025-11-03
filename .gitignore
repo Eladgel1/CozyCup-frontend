@@ -173,5 +173,8 @@ sketch
 # Additional
 public/
 scripts/
+playwright-report/
+test-results/
+coverage/
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,node,react
