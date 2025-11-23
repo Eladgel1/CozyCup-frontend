@@ -1,0 +1,26 @@
+# dependencies & caches
+node_modules
+npm-debug.log
+yarn.lock
+pnpm-lock.yaml
+*.log
+
+# vcs & editor
+.git
+.gitignore
+.vscode
+.idea
+
+# tests & coverage
+coverage
+tests
+playwright-report
+test-results
+
+# build outputs
+dist
+build
+
+# env files
+.env
+.env.*
