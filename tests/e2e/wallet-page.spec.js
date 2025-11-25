@@ -166,8 +166,7 @@ test.describe('WalletPage + PurchasePassModal (E2E)', () => {
   });
 
   test('allows topping up balance and then buying a coffee pass fully visually', async ({ page }) => {
-    await page.goto('/wallet');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/wallet', { waitUntil: 'domcontentloaded' });
 
     // Hero loaded
     await expect(page.getByRole('heading', { name: /wallet/i })).toBeVisible();

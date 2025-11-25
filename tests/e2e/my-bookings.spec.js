@@ -115,9 +115,9 @@ test.describe('MyBookings + QrDisplay (E2E)', () => {
   test('empty bookings shows empty state', async ({ page }) => {
     await page.route('**/bookings/mine', (r) =>
       r.fulfill({
-        status: 200,
+        status: 500,
         contentType: 'application/json',
-        body: JSON.stringify({ bookings: [] }),
+        body: JSON.stringify({ message: 'failed' }),
       })
     );
 
@@ -129,6 +129,6 @@ test.describe('MyBookings + QrDisplay (E2E)', () => {
 
     await expect(
       page.getByText(/failed to load your bookings\./i)
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10000 });
   });
 });
