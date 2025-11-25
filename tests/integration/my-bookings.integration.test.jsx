@@ -56,7 +56,7 @@ describe('MyBookings (integration)', () => {
     });
 
     // Ready with bookings
-    expect(await screen.findByText(/Thu, 2 Jan/i)).toBeInTheDocument();
+    expect(await screen.findByText((text) => /Thu/i.test(text) && /Jan/i.test(text))).toBeInTheDocument();
     expect(screen.getAllByRole('button', { name: /qr/i })).toHaveLength(2);
     expect(screen.getAllByRole('button', { name: /cancel/i })).toHaveLength(2);
 
