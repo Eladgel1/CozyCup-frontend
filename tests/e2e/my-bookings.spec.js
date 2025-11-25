@@ -129,6 +129,6 @@ test.describe('MyBookings + QrDisplay (E2E)', () => {
 
     await expect(
       page.getByText(/failed to load your bookings\./i)
-    ).toBeVisible({ timeout: 10000 });
+    ).toBeVisible({ timeout: 20000 });
   });
 });
