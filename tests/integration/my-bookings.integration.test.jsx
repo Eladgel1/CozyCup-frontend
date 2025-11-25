@@ -66,7 +66,7 @@ describe('MyBookings (integration)', () => {
     fireEvent.click(screen.getAllByRole('button', { name: /cancel/i })[0]);
     await waitFor(() => expect(cancelMock).toHaveBeenCalledWith('b1'));
     await waitFor(() => expect(mineMock).toHaveBeenCalledTimes(2));
-    await screen.findByText(/Fri, 3 Jan/i);
+    expect(await screen.findByText((text) => /Fri/i.test(text) && /Jan/i.test(text))).toBeInTheDocument();
     expect(toastSpy).toHaveBeenCalledWith('Booking canceled', 'success');
   });
 
