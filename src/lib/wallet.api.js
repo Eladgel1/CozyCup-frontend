@@ -28,7 +28,7 @@ function currentUserId() {
       const id = obj?.user?.id || obj?.user?._id;
       if (id) return String(id);
     }
-  } catch {}
+  } catch (e) { console.log(e); }
 
   return 'anon';
 }

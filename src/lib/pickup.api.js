@@ -47,17 +47,17 @@ export const pickupApi = {
       const r = await http.get('/pickup-windows');
       const list = normalize(r.data);
       if (list.length) return list;
-    } catch (_) {}
+    } catch (e) { console.log(e); }
 
     const bag = [];
     try {
       const r1 = await http.get('/pickup-windows', { params: { date: todayISO() } });
       bag.push(...normalize(r1.data));
-    } catch (_) {}
+    } catch (e) { console.log(e); }
     try {
       const r2 = await http.get('/pickup-windows', { params: { date: plusDaysISO(1) } });
       bag.push(...normalize(r2.data));
-    } catch (_) {}
+    } catch (e) { console.log(e); }
 
     const m = new Map();
     for (const w of bag) m.set(w.id, w);

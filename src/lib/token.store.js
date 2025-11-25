@@ -14,7 +14,7 @@ function loadFromStorage() {
     const obj = JSON.parse(raw);
     memory.accessToken = obj.accessToken || null;
     memory.refreshToken = obj.refreshToken || null;
-  } catch (_) {}
+  } catch (e) { console.log(e); }
 }
 
 function saveToStorage(persist = false) {

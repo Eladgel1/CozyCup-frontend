@@ -40,7 +40,6 @@ export default function PurchasePassModal({ open, onClose, onPurchased }) {
       setLoading(false);
       setPlacing(false);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const selected = useMemo(

@@ -6,7 +6,7 @@ import { server, resetTestDb } from './msw/server';
 beforeAll(() => {
   server.listen({
     // Let unknown requests pass through to avoid brittle tests.
-// You can change to 'error' to catch any unexpected network calls.
+    // You can change to 'error' to catch any unexpected network calls.
     onUnhandledRequest: 'bypass',
   });
 });

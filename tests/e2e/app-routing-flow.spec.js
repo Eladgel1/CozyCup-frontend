@@ -31,7 +31,7 @@ test.describe('App + Routes happy-path navigation (E2E)', () => {
         sessionStorage.clear();
         localStorage.removeItem('cozycup_auth');
         sessionStorage.removeItem('cozycup_auth');
-      } catch {}
+      } catch (e) { console.log(e); }
     });
 
     // Go directly to a protected route
@@ -76,7 +76,7 @@ test.describe('App + Routes happy-path navigation (E2E)', () => {
     await page.addInitScript(([k]) => {
       try {
         sessionStorage.setItem(k, JSON.stringify({ accessToken: 'AT', refreshToken: 'RT' }));
-      } catch {}
+      } catch (e) { console.log(e); }
     }, [KEY]);
 
     // Start as authenticated customer

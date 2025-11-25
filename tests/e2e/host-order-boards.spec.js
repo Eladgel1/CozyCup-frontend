@@ -104,7 +104,7 @@ test.describe('HostOrdersBoard (E2E)', () => {
     await expect(page.getByText(/picked up/i)).toBeVisible();
     await expect(page.getByText(/cancelled/i)).toBeVisible();
 
-        // Order content is rendered
+    // Order content is rendered
     await expect(page.getByText(/latte ×1/i)).toBeVisible();
 
     // "No orders" text appears somewhere

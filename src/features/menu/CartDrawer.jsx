@@ -34,7 +34,6 @@ export default function CartDrawer() {
         setWindows([]);
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const placeOrder = async () => {

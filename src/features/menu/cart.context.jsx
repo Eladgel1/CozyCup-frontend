@@ -16,7 +16,7 @@ function loadPersisted() {
 function persist(items) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  } catch {}
+  } catch (e) { console.log(e); }
 }
 
 const CartCtx = createContext(null);

@@ -32,7 +32,7 @@ export default function ReportsPage() {
         const res = await ordersApi.daySummary();
         setData(res || {});
         setState('ready');
-      } catch (e) {
+      } catch {
         setState('error');
       }
     })();

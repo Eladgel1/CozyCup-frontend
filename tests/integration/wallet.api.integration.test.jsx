@@ -1,5 +1,3 @@
-import React from 'react';
-
 let httpMock;
 vi.mock('@/lib/http', () => {
   httpMock ||= { get: vi.fn(), post: vi.fn(), patch: vi.fn(), delete: vi.fn() };

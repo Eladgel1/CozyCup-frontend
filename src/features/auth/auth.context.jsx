@@ -21,7 +21,7 @@ export function AuthProvider({ children }) {
           if (mounted) setUser(null);
         }
         if (mounted) setStatus('ready');
-      } catch (_) {
+      } catch {
         if (mounted) {
           tokenStore.clear();
           setUser(null);
@@ -49,7 +49,7 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
-    try { await authApi.logout(); } catch (_) {}
+    try { await authApi.logout(); } catch(e) { console.log(e); }
     tokenStore.clear();
     setUser(null);
   };

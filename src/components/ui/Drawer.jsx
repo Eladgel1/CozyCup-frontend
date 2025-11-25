@@ -12,7 +12,6 @@ export default function Drawer({ open, onClose, title, children, side = 'right',
   }, [open, onClose]);
 
   if (!open) return null;
-  const translate = side === 'right' ? 'translate-x-full' : '-translate-x-full';
   const from = side === 'right' ? 'right-0' : 'left-0';
 
   return createPortal(

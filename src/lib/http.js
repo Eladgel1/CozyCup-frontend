@@ -77,7 +77,7 @@ http.interceptors.response.use(
           const newAccess = await tokenStore.refresh();
           isRefreshing = false;
           onRefreshed(newAccess);
-        } catch (_) {
+        } catch {
           isRefreshing = false;
           tokenStore.clear();
           return Promise.reject(normalizeError(err));

@@ -10,6 +10,6 @@ export function off(topic, fn) {
 }
 export function emit(topic, payload) {
   subs.get(topic)?.forEach((fn) => {
-    try { fn(payload); } catch {}
+    try { fn(payload); } catch (e) { console.log(e); }
   });
 }
