@@ -28,9 +28,9 @@ jobs:
         run: npm ci
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-        env: 
-            PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/pw-browsers
+        uses: microsoft/playwright-github-action@v1
+        with:
+          with-deps: true
 
       - name: Run Linter
         run: npm run lint
