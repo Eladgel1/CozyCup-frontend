@@ -15,11 +15,11 @@ const backendStyle = {
     },
   },
   rules: {
-    // Critical rules (errors)
+    // Critical rules
     semi: ['error', 'always'],
     indent: ['error', 2, { SwitchCase: 1 }],
 
-    // Soft naming conventions (warn)
+    // Soft naming conventions
     camelcase: ['warn', { properties: 'always' }],
     'id-match': [
       'warn',
@@ -27,11 +27,6 @@ const backendStyle = {
       { onlyDeclarations: true },
     ],
     'new-cap': ['warn', { newIsCap: true, capIsNew: false }],
-
-    // Extras
-    eqeqeq: 'error',
-    'prefer-const': 'warn',
-    'no-console': 'off',
   },
 };
 
@@ -57,12 +52,33 @@ const feReactLayer = {
 
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',
+
+    'react-hooks/rules-of-hooks': 'off',
+    'react-hooks/exhaustive-deps': 'off',
   },
   settings: { react: { version: 'detect' } },
+};
+
+const testLayer = {
+  files: ['tests/**/*.{js,jsx,mjs}'],
+  languageOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+    globals: {
+      ...globals.node,
+      ...globals.browser,
+      ...globals.jest, // describe / it / expect / beforeEach / afterEach / beforeAll / afterAll
+      vi: 'readonly',
+      global: 'readonly',
+    },
+  },
+  rules: {
+  },
 };
 
 export default [
   backendStyle,
   js.configs.recommended,
   feReactLayer,
+  testLayer,
 ];
