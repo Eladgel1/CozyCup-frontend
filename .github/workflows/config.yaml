@@ -1,0 +1,50 @@
+name: CozyCup Frontend - CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-lint-build-docker-fe:
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --dns-result-order=ipv4first
+      # FE builds & Docker image will use this as Vite API base URL
+      VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Linter
+        run: npm run lint
+
+      - name: Run Tests
+        run: npm run test
+
+      - name: Build Vite app
+        run: npm run build
+
+      - name: Build Docker image (prod)
+        run: npm run docker:build:prod
+
+      - name: Save image as tar
+        run: docker save cozycup-fe:prod -o cozycup-fe-prod.tar
+
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cozycup-fe-prod-image
+          path: cozycup-fe-prod.tar
+          if-no-files-found: error
