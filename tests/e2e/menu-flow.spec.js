@@ -21,7 +21,7 @@ async function loginAsCustomer(page) {
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({
-        user: { id: 'u1', email: 'eee@g.com', role: 'customer' },
+        user: { id: 'h1', email: 'elad@stam.com', role: 'host' },
       }),
     })
   );
@@ -53,7 +53,7 @@ async function stubMenuList(page, items) {
 
 // Stub for pickupApi.list()
 async function stubPickupWindows(page, windows) {
-  await page.route('**/pickup', (route) => {
+  await page.route('**/pickup-windows', (route) => {
     const req = route.request();
     if (req.method() !== 'GET') return route.fallback();
     return route.fulfill({
@@ -211,11 +211,19 @@ test.describe('Menu + Cart flow (E2E)', () => {
 
     const windows = [
       {
-        id: 'w1',
+        id: '6904e3590f3692008aec8852',
+        _id: '6904e3590f3692008aec8852',
         startAt: start.toISOString(),
         endAt: end.toISOString(),
-        capacity: 5,
-        bookedCount: 1,
+        capacity: 6,
+        bookedCount: 0,
+        status: 'open',
+        isActive: true,
+        isDeleted: false,
+        notes: '',
+        displayOrder: 0,
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString(),
       },
     ];
     await stubPickupWindows(page, windows);
@@ -238,7 +246,6 @@ test.describe('Menu + Cart flow (E2E)', () => {
     const select = page.locator('select').first();
     await expect(select).toBeVisible();
 
-    // At this point a window should be auto-selected, making Place order enabled
     const placeBtn = page.getByRole('button', { name: /place order/i }).first();
     await expect(placeBtn).toBeEnabled();
 
@@ -289,7 +296,7 @@ test.describe('Menu + Cart flow (E2E)', () => {
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
-          user: { id: 'u1', email: 'eee@g.com', role: 'customer' },
+          user: { id: 'h1', email: 'elad@stam.com', role: 'host' },
         }),
       })
     );
