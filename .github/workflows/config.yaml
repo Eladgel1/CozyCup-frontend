@@ -51,3 +51,10 @@ jobs:
           name: cozycup-fe-prod-image
           path: cozycup-fe-prod.tar
           if-no-files-found: error
+
+      - name: Deploy App to Render
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: curl -fsSL -X POST "$RENDER_FE_DEPLOY_HOOK"
+        env:
+          RENDER_FE_DEPLOY_HOOK: ${{ secrets.RENDER_FE_DEPLOY_HOOK }}
+
