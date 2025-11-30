@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { tokenStore } from './token.store';
 
-const baseURL = import.meta.env.VITE_API_BASE_URL || '';
+const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://cozycup-backend.onrender.com';
 
 export const http = axios.create({
   baseURL,
