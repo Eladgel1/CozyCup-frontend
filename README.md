@@ -1,5 +1,8 @@
-# ☕ CozyCup Frontend - Click · Collect · Coffee  
+# ☕ CozyCup Frontend - Click · Collect · Coffee
+
+<p align="center">
 Modern React Application for a Seamless Coffee-Shop Ordering Experience
+</p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/React-18+-61DAFB?logo=react" />
