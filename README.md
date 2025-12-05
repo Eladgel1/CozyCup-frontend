@@ -1,5 +1,5 @@
 # ☕ CozyCup Frontend - Click · Collect · Coffee  
-        Modern React Application for a Seamless Coffee-Shop Ordering Experience
+Modern React Application for a Seamless Coffee-Shop Ordering Experience
 
 <p align="center">
   <img src="https://img.shields.io/badge/React-18+-61DAFB?logo=react" />
