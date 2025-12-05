@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/badge/TailwindCSS-Ready-38bdf8?logo=tailwindcss" />
   <img src="https://img.shields.io/badge/Playwright-E2E Tests-2ecc71?logo=playwright" />
   <img src="https://img.shields.io/badge/Docker-Image_blue?logo=docker" />
-  <img src="https://img.shields.io/badge/CI-GitHub_Actions-orange?logo=githubactions" />
+  <img src="https://img.shields.io/badge/CI/CD-GitHub_Actions-orange?logo=githubactions" />
 </p>
 
 <p align="center">
