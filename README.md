@@ -1,5 +1,5 @@
-# 🍵 CozyCup Frontend – Click · Collect · Coffee  
-Modern React Application for a Seamless Coffee-Shop Ordering Experience
+# ☕ CozyCup Frontend - Click · Collect · Coffee  
+        Modern React Application for a Seamless Coffee-Shop Ordering Experience
 
 <p align="center">
   <img src="https://img.shields.io/badge/React-18+-61DAFB?logo=react" />
@@ -147,7 +147,7 @@ npm run docker:run:prod
 
 ---
 
-## 🛠️ CI/CD – GitHub Actions
+## 🛠️ CI/CD - GitHub Actions
 
 Every push to `main` triggers:
 
@@ -161,7 +161,7 @@ Every push to `main` triggers:
 
 ---
 
-## ☁️ Deployment – Render
+## ☁️ Deployment - Render
 
 The app is deployed as a **static site**.
 
@@ -171,7 +171,7 @@ Render config:
 |--------|-------|
 | **Build Command** | `npm ci && npm run build` |
 | **Publish Directory** | `dist` |
-| **Environment Variable** | `VITE_API_BASE_URL=<backend>` |
+| **Environment Variable** | `VITE_API_BASE_URL=https://cozycup-backend.onrender.com/` |
 
 Live Production URL:
 
